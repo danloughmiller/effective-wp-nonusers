@@ -2,5 +2,14 @@
     "name": "danloughmiller/effective-wp-nonusers",
     "autoload": {
         "files": ["src/ewn.php"]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/danloughmiller/effective-data-model"
+        }
+    ],
+    "require": {
+        "danloughmiller/effective-data-model": "master@dev"
     }
 }
