@@ -3,6 +3,10 @@ namespace EffectiveWPNonUsers;
 class EWN_Schema extends \EffectiveDataModel\WPSchema
 {
 
+    public const NONUSER_TABLE = 'effwp_nonusers';
+    public const NONUSER_META_TABLE = 'effwp_nonuser_meta';
+    public const NONUSER_ROLES_TABLE='effwp_nonuser_roles';
+
     static $version = 1.0;
 
     static function createTables()
@@ -18,7 +22,7 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
 
     static function getUsersSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
     {
-        $tableName = $prefix . 'effwp_nonusers';
+        $tableName = $prefix . self::NONUSER_TABLE;
 
         $sql = "
           CREATE TABLE IF NOT EXISTS $tableName (
@@ -40,7 +44,7 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
 
     static function getUsersMetaSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
     {
-        $tableName = $prefix . 'effwp_nonuser_meta';
+        $tableName = $prefix . self::NONUSER_META_TABLE;
 
         $sql = "
           CREATE TABLE IF NOT EXISTS $tableName (
@@ -59,7 +63,7 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
 
     static function getUserRolesSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
     {
-        $tableName = $prefix . 'effwp_nonuser_roles';
+        $tableName = $prefix . self::NONUSER_ROLES_TABLE;
 
         $sql = "
           CREATE TABLE IF NOT EXISTS $tableName (
