@@ -11,9 +11,9 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
         $charset_collate = $wpdb->get_charset_collate();
         $prefix = $wpdb->prefix;
 
-        parent::createTable(self::getUsersSchema($prefix, self::$version, $charset_collate));
-        parent::createTable(self::getUsersMetaSchema($prefix, self::$version, $charset_collate));
-        parent::createTable(self::getUserRolesSchema($prefix, self::$version, $charset_collate));
+        parent::createTable($wpdb, self::getUsersSchema($prefix, self::$version, $charset_collate));
+        parent::createTable($wpdb, self::getUsersMetaSchema($prefix, self::$version, $charset_collate));
+        parent::createTable($wpdb, self::getUserRolesSchema($prefix, self::$version, $charset_collate));
     }
 
     static function getUsersSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
