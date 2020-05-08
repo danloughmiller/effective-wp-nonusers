@@ -102,7 +102,7 @@ class UserRequiredFieldMissing extends Exception
 {
     public function __construct($fields='')
     {
-        $msg = (is_array($fields)?implode(',',$fields),$fields) . ' missing from user creation';
+        $msg = (is_array($fields)?implode(',',$fields) . ' missing from user creation': $fields);
         parent::__construct($msg);
     }
 }
