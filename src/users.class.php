@@ -75,27 +75,10 @@ class Users
         return $user->save();
     }
 
-    /* User Meta */
-    static function getUserMeta($userId, $field=false, $singleValue=false)
-    {
+    /* Roles */
 
-    }
 
-    static function updateUserMeta($userId, $field, $value)
-    {
-
-    }
-
-    static function addUserMeta($userId, $field, $value)
-    {
-
-    }
-
-    static function deleteUserMeta($userId, $field, $value=false)
-    {
-
-    }
-    /* End User Meta */
+    /* End Roles */
 
     /* Security */
     static function passwordHash($password)
@@ -103,7 +86,7 @@ class Users
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    function checkLogin($email, $password)
+    static function checkLogin($email, $password)
     {
         $user = self::getUserByEmail($email);
 

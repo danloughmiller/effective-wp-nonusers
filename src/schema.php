@@ -1,11 +1,12 @@
 <?php
 namespace EffectiveWPNonUsers;
-class EWN_Schema extends \EffectiveDataModel\WPSchema
+class EWN_Schema extends \EffectiveWPToolkit\WPSchema
 {
 
     public const NONUSER_TABLE = 'effwp_nonusers';
     public const NONUSER_META_TABLE = 'effwp_nonuser_meta';
     public const NONUSER_ROLES_TABLE='effwp_nonuser_roles';
+    public const NONUSER_AUTH_TOKENS='effwp_nonuser_authtokens';
 
     static $version = 1.0;
 
@@ -18,6 +19,7 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
         parent::createTable($wpdb, self::getUsersSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUsersMetaSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUserRolesSchema($prefix, self::$version, $charset_collate));
+        parent::createTable($wpdb, self::getUserAuthTokensSchema($prefix, self::$version, $charset_collate));
     }
 
     static function getUsersSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
@@ -44,21 +46,7 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
 
     static function getUsersMetaSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
     {
-        $tableName = $prefix . self::NONUSER_META_TABLE;
-
-        $sql = "
-          CREATE TABLE IF NOT EXISTS $tableName (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
-          `userId` int(11) NOT NULL,
-          `metaKey` varchar(128) NOT NULL,
-          `metaValue` text NOT NULL,
-          PRIMARY KEY (`id`),
-          KEY `userId` (`userId`),
-          KEY `metaKey` (`metaKey`)
-          )  $charset;
-          ";
-
-        return $sql;
+        return \EffectiveWPNonUsers\UserMeta::getSchema($prefix);
     }
 
     static function getUserRolesSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
@@ -76,6 +64,25 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
           KEY `role` (`role`)
           )  $charset;
           ";
+
+        return $sql;
+    }
+
+    static function getUserAuthTokensSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
+    {
+        $tableName = $prefix . self::NONUSER_AUTH_TOKENS;
+
+        $sql = "
+        CREATE TABLE IF NOT EXISTS $tableName (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `userId` int(11) NOT NULL,
+        `token` varchar(255) NOT NULL,
+        `created` datetime NOT NULL,
+        PRIMARY KEY (`id`),
+        KEY `userId` (`userId`),
+        KEY `created` (`created`)
+        )  $charset;
+        ";
 
         return $sql;
     }
