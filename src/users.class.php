@@ -56,7 +56,7 @@ class Users
         }
 
         //Verify user is unique
-        $existing = self::getUserByEmail($email);
+        $existing = self::getUserByEmail($data['email']);
         if (!empty($existing)) {
             throw new UserEmailExistsException();
             return false;
@@ -109,17 +109,17 @@ class Users
 
 class UserRequiredFieldMissing extends \Exception
 {
-    public function __construct($fields='')
+    public function __construct($fields='', $code=0)
     {
         $msg = (is_array($fields)?implode(',',$fields) . ' missing from user creation': $fields);
-        parent::__construct($msg);
+        parent::__construct($msg, $code);
     }
 }
 
 class UserEmailExistsException extends \Exception
 {
-    public function __construct($message)
+    public function __construct($message='email already exists', $code=0)
     {
-        parent::__construct($message);
+        parent::__construct($message, $code);
     }
 }
