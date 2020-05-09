@@ -28,7 +28,7 @@ class EWN_Schema extends \EffectiveDataModel\WPSchema
           CREATE TABLE IF NOT EXISTS $tableName (
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `email` varchar(128) NOT NULL,
-          `password` varchar(128) NOT NULL,
+          `password` varchar(255) NOT NULL,
           `status` int(11) NOT NULL,
           `registered` datetime NOT NULL,
           `confirmed` datetime NOT NULL,

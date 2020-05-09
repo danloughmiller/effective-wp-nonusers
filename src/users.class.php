@@ -36,7 +36,8 @@ class Users
 
         if (!empty($result)) {
             $user = new User();
-            return $user->fromArray($result);
+            $user->fromArray($result);
+            return $user->save();
         }
 
         return false;
@@ -64,6 +65,9 @@ class Users
         //Supply missing data
         if (empty($data['status'])) $data['status'] = self::USER_STATUS_NEW;
         if (empty($data['registered'])) $data['registered'] = current_time('mysql');
+
+        //Hash the password
+        $data['password'] = self::passwordHash($data['password']);
 
         $user = new User();
         $user->fromArray($data);
@@ -94,11 +98,16 @@ class Users
     }
     /* End User Meta */
 
+    /* Security */
+    static function passwordHash($password)
+    {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
 
 }
 
 
-class UserRequiredFieldMissing extends Exception
+class UserRequiredFieldMissing extends \Exception
 {
     public function __construct($fields='')
     {
@@ -107,7 +116,7 @@ class UserRequiredFieldMissing extends Exception
     }
 }
 
-class UserEmailExistsException extends Exception
+class UserEmailExistsException extends \Exception
 {
     public function __construct($message)
     {
