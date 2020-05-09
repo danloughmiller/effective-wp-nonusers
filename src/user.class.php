@@ -10,7 +10,7 @@ class User extends \EffectiveDataModel\WPDataModel
     }
     
     function getEmail() { return $this->getField('email');}
-    function getPassword() { return false; }
+    function getPassword() { return $this->getField('password'); }
     function getStatus() { return $this->getField('status');}
     function getRegistered() { return $this->getField('registered');}
     function getConfirmed() { return $this->getField('confirmed');}

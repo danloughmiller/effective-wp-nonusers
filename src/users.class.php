@@ -75,7 +75,6 @@ class Users
         return $user->save();
     }
 
-
     /* User Meta */
     static function getUserMeta($userId, $field=false, $singleValue=false)
     {
@@ -104,6 +103,19 @@ class Users
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
+    function checkLogin($email, $password)
+    {
+        $user = self::getUserByEmail($email);
+
+        if (empty($user))
+            return false;
+
+        $hash = $user->getPassword();
+        
+        return password_verify($password, $hash);
+    }
+    /* End Security */
+
 }
 
 
@@ -119,6 +131,14 @@ class UserRequiredFieldMissing extends \Exception
 class UserEmailExistsException extends \Exception
 {
     public function __construct($message='email already exists', $code=0)
+    {
+        parent::__construct($message, $code);
+    }
+}
+
+class UserNoFoundException extends \Exception
+{
+    public function __construct($message='user could not be found', $code=0)
     {
         parent::__construct($message, $code);
     }
