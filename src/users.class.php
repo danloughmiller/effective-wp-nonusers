@@ -95,7 +95,10 @@ class Users
 
         $hash = $user->getPassword();
         
-        return password_verify($password, $hash);
+        if (password_verify($password, $hash))
+            return $user;
+
+        return false;
     }
     /* End Security */
 
