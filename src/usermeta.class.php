@@ -7,7 +7,8 @@ class UserMeta extends \EffectiveWPToolkit\WPMeta
 
     static function getTable()
     {
-        return self::EWN_META_TABLE;
+        global $wpdb;
+        return $wpdb->prefix . self::EWN_META_TABLE;
     }
 
 }

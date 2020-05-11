@@ -71,8 +71,8 @@ class Users
 
         $user = new User();
         $user->fromArray($data);
-
-        return $user->save();
+        $user->save();
+        return $user->getId();
     }
 
     /* Roles */
