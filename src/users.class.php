@@ -100,6 +100,19 @@ class Users
 
         return false;
     }
+
+    static function confirmAccount($userId, $confirmed=false)
+    {
+        if ($confirmed===false)
+            $confirmed = current_time('mysql');
+
+        global $wpdb;
+        $wpdb->update(
+            $wpdb->prefix . EWN_Schema::NONUSER_TABLE,
+            array('confirmed'=>$confirmed),
+            array('id'=>$userId)
+        );
+    }
     /* End Security */
 
 }

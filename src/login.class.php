@@ -15,7 +15,8 @@ class Login
 
     static function createAuthToken($length=self::TOKEN_LENGTH)
     {
-        $token = bin2hex(random_bytes(64));
+        $token = bin2hex(random_bytes($length));
+        return $token;
     }
 
     static function getCurrentUser()

@@ -18,7 +18,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
 
         parent::createTable($wpdb, self::getUsersSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUsersMetaSchema($prefix, self::$version, $charset_collate));
-        parent::createTable($wpdb, self::getUserRolesSchema($prefix, self::$version, $charset_collate));
+        //parent::createTable($wpdb, self::getUserRolesSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUserAuthTokensSchema($prefix, self::$version, $charset_collate));
     }
 
