@@ -21,7 +21,26 @@ class Login
 
     static function getCurrentUser()
     {
+        $token = !empty($_COOKIE[self::COOKIE_NAME_AUTH_TOKEN])?$_COOKIE[self::COOKIE_NAME_AUTH_TOKEN]:false;
+        
+        if (!empty($token))
+        {
+            $tokenInfo = static::getTokenInfo($token);
 
+            if (!empty($tokenInfo))
+            {
+                $userId = $tokenInfo->userId;
+                return static::getUserById($userId);
+            }
+        }
+
+
+        return false;
+    }
+
+    static function getUserById($id)
+    {
+        return Users::getUser($id);
     }
 
 
@@ -32,18 +51,18 @@ class Login
         {
             do {
                 $token = self::createAuthToken();
-            } while (self::getTokenInfo($token)===false);
+            } while (self::getTokenInfo($token)!=false);
 
             self::storeToken($user->getId(), $token);
-            setcookie(COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
+            setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
         }
     }
 
 
     static function logoutUser()
     {
-        setcookie(COOKIE_NAME_AUTH_TOKEN, null, -1, '/');
-        setcookie(COOKIE_NAME_ELEVATE_TOKEN, null, -1, '/');
+        setcookie(self::COOKIE_NAME_AUTH_TOKEN, null, -1, '/');
+        setcookie(self::COOKIE_NAME_ELEVATE_TOKEN, null, -1, '/');
     }
 
     /* End Cookie Management */
@@ -65,7 +84,7 @@ class Login
     {
         global $wpdb;
         $sql = 'SELECT * FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_AUTH_TOKENS . ' WHERE token = %s LIMIT 1';
-        $sql = $wpdb->prepare($sql);
+        $sql = $wpdb->prepare($sql, $token);
 
         $result = $wpdb->get_row($sql);
 

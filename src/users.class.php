@@ -13,7 +13,7 @@ class Users
         global $wpdb;
 
         $sql = 'SELECT * FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_TABLE . ' WHERE id=%d';
-        $sql = $wpdb->prepare($sql, $email);
+        $sql = $wpdb->prepare($sql, $id);
 
         $result = $wpdb->get_row($sql);
 
