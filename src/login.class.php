@@ -53,6 +53,8 @@ class Login
                 $token = self::createAuthToken();
             } while (self::getTokenInfo($token)!=false);
 
+            self::removeUserTokens($user->getId());
+
             self::storeToken($user->getId(), $token);
             setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
         }
@@ -68,18 +70,27 @@ class Login
     /* End Cookie Management */
 
     /* User Switching */
-    function switchToUser($userId)
+    static function switchToUser($userId)
     {
 
     }
 
-    function restoreUser()
+    static function restoreUser()
     {
 
     }
     /* End User Switching */
 
     /* Token Management */
+    static function removeUserTokens($userId)
+    {
+        global $wpdb;
+        $sql = 'DELETE FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_AUTH_TOKENS . ' WHERE userId=%d';
+        $sql = $wpdb->prepare($sql, $userId);
+
+        $wpdb->query($sql);
+    }
+
     static function getTokenInfo($token)
     {
         global $wpdb;
