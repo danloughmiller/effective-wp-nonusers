@@ -1,14 +1,14 @@
 <?php
 namespace EffectiveWPNonUsers;
 
-class Users
+class Users extends \EffectiveWPToolkit\Singleton
 {
     const USER_STATUS_NEW='new';
     const USER_STATUS_ACTIVE='active';
     const USER_STATUS_DELETED='deleted';
     const USER_STATUS_DISABLED='disabled';
 
-    static function getUser($id)
+    function getUser($id)
     {
         global $wpdb;
 
@@ -25,7 +25,7 @@ class Users
         return false;
     }
 
-    static function getUserByEmail($email)
+    function getUserByEmail($email)
     {
         global $wpdb;
 
@@ -43,7 +43,7 @@ class Users
         return false;
     }
 
-    static function createUser($data = array())
+    function createUser($data = array())
     {
         //Validate required fields
         $required = array('email', 'password');
@@ -75,18 +75,13 @@ class Users
         return $user->getId();
     }
 
-    /* Roles */
-
-
-    /* End Roles */
-
     /* Security */
-    static function passwordHash($password)
+    function passwordHash($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    static function checkLogin($email, $password)
+    function checkLogin($email, $password)
     {
         $user = self::getUserByEmail($email);
 
@@ -101,7 +96,7 @@ class Users
         return false;
     }
 
-    static function confirmAccount($userId, $confirmed=false)
+    function confirmAccount($userId, $confirmed=false)
     {
         if ($confirmed===false)
             $confirmed = current_time('mysql');

@@ -5,10 +5,10 @@ class UserMeta extends \EffectiveWPToolkit\WPMeta
 {
     const EWN_META_TABLE='effwp_nonuser_meta';
 
-    static function getTable($prefix=false)
+    function getTable($applyPrefix=false)
     {
         global $wpdb;
-        return ($prefix?$wpdb->prefix:'') . self::EWN_META_TABLE;
+        return ($applyPrefix?$wpdb->prefix:'') . self::EWN_META_TABLE;
     }
 
 }

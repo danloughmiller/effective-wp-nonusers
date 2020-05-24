@@ -18,7 +18,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
 
         parent::createTable($wpdb, self::getUsersSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUsersMetaSchema($prefix, self::$version, $charset_collate));
-        //parent::createTable($wpdb, self::getUserRolesSchema($prefix, self::$version, $charset_collate));
+        parent::createTable($wpdb, self::getUserRolesSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUserAuthTokensSchema($prefix, self::$version, $charset_collate));
     }
 
@@ -46,7 +46,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
 
     static function getUsersMetaSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
     {
-        return \EffectiveWPNonUsers\UserMeta::getSchema($prefix);
+        return \EffectiveWPNonUsers\UserMeta::getInstance()->getSchema($prefix);
     }
 
     static function getUserRolesSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
