@@ -8,6 +8,11 @@ class Users extends \EffectiveWPToolkit\Singleton
     const USER_STATUS_DELETED='deleted';
     const USER_STATUS_DISABLED='disabled';
 
+    function getMetaHandler()
+    {
+        return UserMeta::getInstance();
+    }
+
     function getUser($id)
     {
         global $wpdb;
@@ -56,18 +61,18 @@ class Users extends \EffectiveWPToolkit\Singleton
         }
 
         //Verify user is unique
-        $existing = self::getUserByEmail($data['email']);
+        $existing = $this->getUserByEmail($data['email']);
         if (!empty($existing)) {
             throw new UserEmailExistsException();
             return false;
         }
 
         //Supply missing data
-        if (empty($data['status'])) $data['status'] = self::USER_STATUS_NEW;
+        if (empty($data['status'])) $data['status'] = $this->USER_STATUS_NEW;
         if (empty($data['registered'])) $data['registered'] = current_time('mysql');
 
         //Hash the password
-        $data['password'] = self::passwordHash($data['password']);
+        $data['password'] = $this->passwordHash($data['password']);
 
         $user = new User();
         $user->fromArray($data);
@@ -83,7 +88,7 @@ class Users extends \EffectiveWPToolkit\Singleton
 
     function checkLogin($email, $password)
     {
-        $user = self::getUserByEmail($email);
+        $user = $this->getUserByEmail($email);
 
         if (empty($user))
             return false;
