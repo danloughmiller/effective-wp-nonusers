@@ -26,4 +26,28 @@ class User extends \EffectiveDataModel\WPDataModel
     function setRegistered($registered) { $this->setField('registered', $registered); }
     function setConfirmed($confirmed) { $this->setField('confirmed', $confirmed); }
 
+
+    protected function USERS()
+    {
+        return Users::getInstance();
+    }
+
+    protected function META()
+    {
+        $users = $this->USERS();
+        return $users->META();
+    }
+
+    function getMeta($key, $singleValue=true)
+    {
+        $meta = $this->META();
+        return $meta->getMeta($this->getId(), $key, $singleValue);
+    }
+
+    function updateMeta($key, $value)
+    {
+        $meta = $this->META();
+        return $meta->updateMeta($this->getId(), $key, $value);
+    }
+
 }

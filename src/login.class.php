@@ -1,36 +1,40 @@
 <?php
 namespace EffectiveWPNonUsers;
 
-class Login
+class Login extends \EffectiveWPToolkit\Singleton
 {
-
     const TOKEN_LENGTH = 100;
     const COOKIE_NAME_AUTH_TOKEN = 'ewn_authtoken';
     const COOKIE_NAME_ELEVATE_TOKEN = 'ewn_elevatetoken';
     
-    static function checkLogin($email, $password)
+    protected function USERS()
     {
-        return Users::checkLogin($email, $password);
+        return Users::get_instance();
     }
 
-    static function createAuthToken($length=self::TOKEN_LENGTH)
+    function checkLogin($email, $password)
+    {
+        return $this->USERS()->checkLogin($email, $password);
+    }
+
+    function createAuthToken($length=self::TOKEN_LENGTH)
     {
         $token = bin2hex(random_bytes($length));
         return $token;
     }
 
-    static function getCurrentUser()
+    function getCurrentUser()
     {
         $token = !empty($_COOKIE[self::COOKIE_NAME_AUTH_TOKEN])?$_COOKIE[self::COOKIE_NAME_AUTH_TOKEN]:false;
         
         if (!empty($token))
         {
-            $tokenInfo = static::getTokenInfo($token);
+            $tokenInfo = $this->getTokenInfo($token);
 
             if (!empty($tokenInfo))
             {
                 $userId = $tokenInfo->userId;
-                return static::getUserById($userId);
+                return $this->getUserById($userId);
             }
         }
 
@@ -38,30 +42,30 @@ class Login
         return false;
     }
 
-    static function getUserById($id)
+    function getUserById($id)
     {
-        return Users::getUser($id);
+        return $this->USERS()->getUser($id);
     }
 
 
     /* Cookie Management */
-    static function loginUser($email, $password)
+    function loginUser($email, $password)
     {
-        if ($user = self::checkLogin($email,$password))
+        if ($user = $this->checkLogin($email,$password))
         {
             do {
-                $token = self::createAuthToken();
-            } while (self::getTokenInfo($token)!=false);
+                $token = $this->createAuthToken();
+            } while ($this->getTokenInfo($token)!=false);
 
-            self::removeUserTokens($user->getId());
+            $this->removeUserTokens($user->getId());
 
-            self::storeToken($user->getId(), $token);
+            $this->storeToken($user->getId(), $token);
             setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
         }
     }
 
 
-    static function logoutUser()
+    function logoutUser()
     {
         setcookie(self::COOKIE_NAME_AUTH_TOKEN, null, -1, '/');
         setcookie(self::COOKIE_NAME_ELEVATE_TOKEN, null, -1, '/');
@@ -70,19 +74,19 @@ class Login
     /* End Cookie Management */
 
     /* User Switching */
-    static function switchToUser($userId)
+    function switchToUser($userId)
     {
 
     }
 
-    static function restoreUser()
+    function restoreUser()
     {
 
     }
     /* End User Switching */
 
     /* Token Management */
-    static function removeUserTokens($userId)
+    function removeUserTokens($userId)
     {
         global $wpdb;
         $sql = 'DELETE FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_AUTH_TOKENS . ' WHERE userId=%d';
@@ -91,7 +95,7 @@ class Login
         $wpdb->query($sql);
     }
 
-    static function getTokenInfo($token)
+    function getTokenInfo($token)
     {
         global $wpdb;
         $sql = 'SELECT * FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_AUTH_TOKENS . ' WHERE token = %s LIMIT 1';
@@ -102,9 +106,9 @@ class Login
         return $result;
     }
 
-    static function storeToken($userId, $token, $created=false)
+    function storeToken($userId, $token, $created=false)
     {
-        if (self::getTokenInfo($token))
+        if ($this->getTokenInfo($token))
         {
             throw new AuthTokenAlreadyExistsException();
             return false;

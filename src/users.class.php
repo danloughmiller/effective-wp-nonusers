@@ -8,9 +8,14 @@ class Users extends \EffectiveWPToolkit\Singleton
     const USER_STATUS_DELETED='deleted';
     const USER_STATUS_DISABLED='disabled';
 
-    function getMetaHandler()
+    function META()
     {
         return UserMeta::getInstance();
+    }
+
+    protected function instantiateUserObject()
+    {
+        return new User();
     }
 
     function getUser($id)
@@ -23,7 +28,7 @@ class Users extends \EffectiveWPToolkit\Singleton
         $result = $wpdb->get_row($sql);
 
         if (!empty($result)) {
-            $user = new User();
+            $user = $this->instantiateUserObject();
             return $user->fromArray($result);
         }
 
