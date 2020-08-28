@@ -7,9 +7,14 @@
         {
             "type": "vcs",
             "url": "https://github.com/danloughmiller/effective-data-model"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/danloughmiller/effective-wp-toolkit"
         }
     ],
     "require": {
-        "danloughmiller/effective-data-model": "master@dev"
+        "danloughmiller/effective-data-model": "master@dev",
+        "danloughmiller/effective-wp-toolkit": "master@dev"
     }
 }
