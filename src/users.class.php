@@ -35,6 +35,11 @@ class Users extends \EffectiveWPToolkit\Singleton
         return false;
     }
 
+    function getUserById($id)
+    {
+        return $this->getUser($id);
+    }
+
     function getUserByEmail($email)
     {
         global $wpdb;

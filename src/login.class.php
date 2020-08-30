@@ -49,7 +49,7 @@ class Login extends \EffectiveWPToolkit\Singleton
 
 
     /* Cookie Management */
-    function loginUser($email, $password)
+    function loginUser($email, $password, $clearOldTokens=true)
     {
         if ($user = $this->checkLogin($email,$password))
         {
@@ -57,7 +57,24 @@ class Login extends \EffectiveWPToolkit\Singleton
                 $token = $this->createAuthToken();
             } while ($this->getTokenInfo($token)!=false);
 
-            $this->removeUserTokens($user->getId());
+            if ($clearOldTokens)
+                $this->removeUserTokens($user->getId());
+
+            $this->storeToken($user->getId(), $token);
+            setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
+        }
+    }
+
+    function forceLoginUser($email)
+    {
+        if ($user = $this->USERS()->getUserByEmail($email))
+        {
+            do {
+                $token = $this->createAuthToken();
+            } while ($this->getTokenInfo($token)!=false);
+
+            if ($clearOldTokens)
+                $this->removeUserTokens($user->getId());
 
             $this->storeToken($user->getId(), $token);
             setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
