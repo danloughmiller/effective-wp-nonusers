@@ -65,7 +65,7 @@ class Login extends \EffectiveWPToolkit\Singleton
         }
     }
 
-    function forceLoginUser($email)
+    function forceLoginUser($email, $clearOldTokens=true)
     {
         if ($user = $this->USERS()->getUserByEmail($email))
         {
