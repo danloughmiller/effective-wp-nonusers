@@ -26,6 +26,11 @@ class User extends \EffectiveDataModel\WPDataModel
     function setRegistered($registered) { $this->setField('registered', $registered); }
     function setConfirmed($confirmed) { $this->setField('confirmed', $confirmed); }
 
+    function isConfirmed()
+    {
+        return $this->getConfirmed() != '0000-00-00 00:00:00';
+    }
+
 
     protected function USERS()
     {
