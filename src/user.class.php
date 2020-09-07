@@ -24,7 +24,7 @@ class User extends \EffectiveDataModel\WPDataModel
         }
     function setStatus($status) { $this->setField('status', $status); }
     function setRegistered($registered) { $this->setField('registered', $registered); }
-    function setConfirmed($confirmed) { $this->setField('confirmed', $confirmed); }
+    function setConfirmed($confirmed) { $this->setField('confirmed', $confirmed===false?'0000-00-00 00:00:00':$confirmed); }
 
     function isConfirmed()
     {
@@ -43,6 +43,12 @@ class User extends \EffectiveDataModel\WPDataModel
         return $users->META();
     }
 
+    function ROLES()
+    {
+        $users = $this->USERS();
+        return $users->ROLES();
+    }
+
     function getMeta($key, $singleValue=true)
     {
         $meta = $this->META();
@@ -53,6 +59,41 @@ class User extends \EffectiveDataModel\WPDataModel
     {
         $meta = $this->META();
         return $meta->updateMeta($this->getId(), $key, $value);
+    }
+
+    function getRoles()
+    {
+        $roles = $this->ROLES();
+        return $roles->getUserRoles($this->getId());
+    }
+
+    function getRoleNames()
+    {
+        $role = $this->getRoles();
+        $s = array();
+        foreach ($role as $r) {
+            $s[] = $r->getRole();
+        }
+
+        return $s;
+    }
+
+    function hasRole($role)
+    {
+        $roles = $this->ROLES();
+        return $roles->userHasRole($this->getId(), $role);
+    }
+
+    function addRole($role, $roleData=array())
+    {
+        $roles = $this->ROLES();
+        return $roles->addUserRole($this->getId(), $role, $roleData);
+    }
+
+    function removeRole($role)
+    {
+        $roles = $this->ROLES();
+        return $roles->removeUserRole($this->getId(), $role);
     }
 
 }

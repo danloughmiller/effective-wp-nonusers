@@ -13,6 +13,11 @@ class Users extends \EffectiveWPToolkit\Singleton
         return UserMeta::getInstance();
     }
 
+    function ROLES()
+    {
+        return Roles::instance();
+    }
+
     protected function instantiateUserObject()
     {
         return new User();
