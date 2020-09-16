@@ -81,6 +81,22 @@ class Login extends \EffectiveWPToolkit\Singleton
         }
     }
 
+    function forceLoginUserById($id, $clearOldTokens=true)
+    {
+        if ($user = $this->USERS()->getUser($id))
+        {
+            do {
+                $token = $this->createAuthToken();
+            } while ($this->getTokenInfo($token)!=false);
+
+            if ($clearOldTokens)
+                $this->removeUserTokens($user->getId());
+
+            $this->storeToken($user->getId(), $token);
+            setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
+        }
+    }
+
 
     function logoutUser()
     {

@@ -23,11 +23,17 @@ class Users extends \EffectiveWPToolkit\Singleton
         return new User();
     }
 
+    function getTable()
+    {
+        global $wpdb;
+        return $wpdb->prefix . EWN_Schema::NONUSER_TABLE;
+    }
+
     function getUser($id)
     {
         global $wpdb;
 
-        $sql = 'SELECT * FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_TABLE . ' WHERE id=%d';
+        $sql = 'SELECT * FROM ' . $this->getTable() . ' WHERE id=%d';
         $sql = $wpdb->prepare($sql, $id);
 
         $result = $wpdb->get_row($sql);
@@ -49,7 +55,7 @@ class Users extends \EffectiveWPToolkit\Singleton
     {
         global $wpdb;
 
-        $sql = 'SELECT * FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_TABLE . ' WHERE email=%s';
+        $sql = 'SELECT * FROM ' . $this->getTable() . ' WHERE email=%s';
         $sql = $wpdb->prepare($sql, $email);
 
         $result = $wpdb->get_row($sql);
@@ -123,7 +129,7 @@ class Users extends \EffectiveWPToolkit\Singleton
 
         global $wpdb;
         $wpdb->update(
-            $wpdb->prefix . EWN_Schema::NONUSER_TABLE,
+            $this->getTable(),
             array('confirmed'=>$confirmed),
             array('id'=>$userId)
         );
