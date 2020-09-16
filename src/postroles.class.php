@@ -21,9 +21,46 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
         return $wpdb->prefix . 'postmeta';
     }
 
-    function getMetaKey($user_id)
+    function getMetaKey($user_id='')
     {
         return static::POST_ROLES_USER_KEY . $user_id;
+    }
+
+    function getPostRole($role_id)
+    {
+        return static::getRole($role_id);
+    }
+
+    function getRole($role_id)
+    {
+        global $wpdb;
+        $sql = 'SELECT meta_id as ID, SUBSTRING(meta_key, ' . (strlen(self::POST_ROLES_USER_KEY)+1) . ') as user_id,  post_id, meta_value as `role` FROM ' . $this->getTable() . ' where meta_id=%d AND meta_key LIKE \'' . $this->getMetaKey() . '%\' LIMIT 1';
+        $sql = $wpdb->prepare($sql, $role_id);
+
+        return $wpdb->get_row($sql);
+    }
+
+    public function getPostsWithUserHavingRole($user_id, $roles=array())
+    {
+        if (!is_array($roles))
+            $roles = array($roles);
+
+        global $wpdb;
+
+        $sql = 'SELECT meta_id as ID, SUBSTRING(meta_key, ' . (strlen(self::POST_ROLES_USER_KEY)+1) . ') as user_id, post_id, meta_value as `role` FROM ' . $this->getTable() . ' WHERE meta_key=%s';
+        if (empty($roles))
+        {
+            $res = $wpdb->get_results(
+                $wpdb->prepare($sql, $this->getMetaKey($user_id))
+            );
+        } else {
+            $sql .= ' AND meta_value IN (%s)';
+            $res = $wpdb->get_results(
+                $wpdb->prepare($sql, $this->getMetaKey($user_id), "'" .implode("', '", $roles) . "'")
+            );
+        }
+
+        return $res;
     }
 
     function getRolesForUserOnPost($userId, $postId)
