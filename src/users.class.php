@@ -29,6 +29,19 @@ class Users extends \EffectiveWPToolkit\Singleton
         return $wpdb->prefix . EWN_Schema::NONUSER_TABLE;
     }
 
+    function getUsers($limit=50, $offset=0)
+    {
+        global $wpdb;
+        $sql = 'SELECT ID from ' . $this->getTable() . ' ORDER BY email LIMIT ' . $offset . ','.$limit;
+        $res = $wpdb->get_col($sql);
+
+        $users = array();
+        foreach($res as $r) {
+            $users[] = $this->getUser($r);
+        }
+        return $users;
+    }
+
     function getUser($id)
     {
         global $wpdb;
