@@ -88,6 +88,25 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
 
         return false;
     }
+
+    function getPostUsers($postId, $roles = array())
+    {
+        global $wpdb;
+
+        $sql = 'SELECT meta_id as role_id, SUBSTR(meta_key, ' . (strlen($this->getMetaKey())+1) . ') as user_id, meta_value as role FROM ' . $this->getTable() . ' WHERE post_id=' . intval($postId) . ' AND meta_key LIKE \'' . $this->getMetaKey() . '%\'';
+        
+        if (!empty($roles)) {
+            if (is_string($roles))
+                $roles = array($roles);
+
+            $role_string = "'" . implode("', '", $roles) . "'";
+            $sql .= ' AND meta_value IN (' . $role_string . ')';
+        }
+
+        $results = $wpdb->get_results($sql);
+
+        return $results;
+    }
  
     function addUserPostRole($userId, $postId, $role)
     {
@@ -107,6 +126,6 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
     function changeUserPostRole($userId, $postId, $oldRole, $newRole)
     {
         $this->removeUserPostRole($userId, $postId, $oldRole);
-        $this->addUserPostRole($userId, $postId, $role);
+        $this->addUserPostRole($userId, $postId, $newRole);
     }
 }
