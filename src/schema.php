@@ -27,17 +27,17 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
         $tableName = $prefix . self::NONUSER_TABLE;
 
         $sql = "
-          CREATE TABLE IF NOT EXISTS $tableName (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
-          `email` varchar(128) NOT NULL,
-          `password` varchar(255) NOT NULL,
-          `status` int(11) NOT NULL,
-          `registered` datetime NOT NULL,
-          `confirmed` datetime NOT NULL,
-          PRIMARY KEY (`id`),
-          KEY `email` (`email`),
-          KEY `registered` (`registered`),
-          KEY `status` (`status`)
+          CREATE $tableName (
+          id int(11) NOT NULL AUTO_INCREMENT,
+          email varchar(128) NOT NULL,
+          password varchar(255) NOT NULL,
+          status int(11) NOT NULL,
+          registered datetime NOT NULL,
+          confirmed datetime NOT NULL,
+          PRIMARY KEY (id),
+          KEY email (email),
+          KEY registered (registered),
+          KEY status (status)
           ) $charset;
           ";
 
@@ -54,14 +54,14 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
         $tableName = $prefix . self::NONUSER_ROLES_TABLE;
 
         $sql = "
-          CREATE TABLE IF NOT EXISTS $tableName (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
-          `userId` int(11) NOT NULL,
-          `role` varchar(128) NOT NULL,
-          `roleData` text NOT NULL,
-          PRIMARY KEY (`id`),
-          KEY `userId` (`userId`),
-          KEY `role` (`role`)
+          CREATE $tableName (
+          id int(11) NOT NULL AUTO_INCREMENT,
+          userId int(11) NOT NULL,
+          role varchar(128) NOT NULL,
+          roleData text NOT NULL,
+          PRIMARY KEY (id),
+          KEY userId (userId),
+          KEY role (role)
           )  $charset;
           ";
 
@@ -73,14 +73,14 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
         $tableName = $prefix . self::NONUSER_AUTH_TOKENS;
 
         $sql = "
-        CREATE TABLE IF NOT EXISTS $tableName (
-        `id` int(11) NOT NULL AUTO_INCREMENT,
-        `userId` int(11) NOT NULL,
-        `token` varchar(255) NOT NULL,
-        `created` datetime NOT NULL,
-        PRIMARY KEY (`id`),
-        KEY `userId` (`userId`),
-        KEY `created` (`created`)
+        CREATE $tableName (
+        id int(11) NOT NULL AUTO_INCREMENT,
+        userId int(11) NOT NULL,
+        token varchar(255) NOT NULL,
+        created datetime NOT NULL,
+        PRIMARY KEY (id),
+        KEY userId (userId),
+        KEY created (created)
         )  $charset;
         ";
 
