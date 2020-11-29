@@ -68,7 +68,7 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
         global $wpdb;
 
         $sql = 'SELECT meta_value FROM ' . $this->getTable() . ' WHERE meta_key=%s AND post_id=%d';
-        $sql = $wpdb->prepare($sql, $this->getMetaKey($user_id), $postId);
+        $sql = $wpdb->prepare($sql, $this->getMetaKey($userId), $postId);
 
         $result = $wpdb->get_col($sql);
         return $result;

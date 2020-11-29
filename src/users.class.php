@@ -68,15 +68,13 @@ class Users extends \EffectiveWPToolkit\Singleton
     {
         global $wpdb;
 
-        $sql = 'SELECT * FROM ' . $this->getTable() . ' WHERE email=%s';
+        $sql = 'SELECT id FROM ' . $this->getTable() . ' WHERE email=%s';
         $sql = $wpdb->prepare($sql, $email);
 
         $result = $wpdb->get_row($sql);
 
         if (!empty($result)) {
-            $user = new User();
-            $user->fromArray($result);
-            return $user->save();
+            return $this->getUserById($result->id);
         }
 
         return false;
