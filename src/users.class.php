@@ -29,6 +29,14 @@ class Users extends \EffectiveWPToolkit\Singleton
         return $wpdb->prefix . EWN_Schema::NONUSER_TABLE;
     }
 
+    function getUsersCount($confirmedOnly=true)
+    {
+        global $wpdb;
+        
+        $sql = 'SELECT COUNT(*) from ' . $this->getTable() . ' WHERE confirmed>\'0000-00-00 00:00:00\'';
+        return $wpdb->get_var($sql);
+    }
+
     function getUsers($limit=50, $offset=0)
     {
         global $wpdb;
