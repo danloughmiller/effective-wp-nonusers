@@ -43,9 +43,8 @@ class NamedUser extends User
     function setPostalCode($postalCode) { return $this->updateMeta(self::META_POSTAL_CODE, $postalCode); }
 
     function getName() { 
-        return $this->getFirstName() . !empty($this->getLastName()?' '.$this->getLastName():'');}
-
-    
+        return $this->getFirstName() . (!empty($this->getLastName())?' '.$this->getLastName():'');
+    } 
 
     
 
