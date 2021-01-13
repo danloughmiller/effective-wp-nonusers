@@ -108,7 +108,7 @@ class Users extends \EffectiveWPToolkit\Singleton
         }
 
         //Supply missing data
-        if (empty($data['status'])) $data['status'] = $this->USER_STATUS_NEW;
+        if (empty($data['status'])) $data['status'] = self::USER_STATUS_NEW;
         if (empty($data['registered'])) $data['registered'] = current_time('mysql');
 
         //Hash the password
