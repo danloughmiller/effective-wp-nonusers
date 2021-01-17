@@ -88,10 +88,15 @@ class Users extends \EffectiveWPToolkit\Singleton
         return false;
     }
 
+    function getRequiredFields()
+    {
+        return array('email', 'password');
+    }
+
     function createUser($data = array())
     {
         //Validate required fields
-        $required = array('email', 'password');
+        $required = $this->getRequiredFields();
         foreach ($required as $field) {
             if (empty($data[$field]))
             {
