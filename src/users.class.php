@@ -106,10 +106,12 @@ class Users extends \EffectiveWPToolkit\Singleton
         }
 
         //Verify user is unique
-        $existing = $this->getUserByEmail($data['email']);
-        if (!empty($existing)) {
-            throw new UserEmailExistsException();
-            return false;
+        if (!empty($data['email'])) {
+            $existing = $this->getUserByEmail($data['email']);
+            if (!empty($existing)) {
+                throw new UserEmailExistsException();
+                return false;
+            }
         }
 
         //Supply missing data

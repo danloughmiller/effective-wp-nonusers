@@ -22,6 +22,10 @@ class User extends \EffectiveDataModel\WPDataModel
         } else {
             $this->setField('password', $password); }
         }
+    function setPasswordHash($passwordHash)
+    {
+        $this->setPassword($passwordHash, false);
+    }
     function setStatus($status) { $this->setField('status', $status); }
     function setRegistered($registered) { $this->setField('registered', $registered); }
     function setConfirmed($confirmed) { $this->setField('confirmed', $confirmed===false?'0000-00-00 00:00:00':$confirmed); }
