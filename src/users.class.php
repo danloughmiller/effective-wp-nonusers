@@ -37,11 +37,14 @@ class Users extends \EffectiveWPToolkit\Singleton
         return $wpdb->get_var($sql);
     }
 
-    function getUsers($limit=50, $offset=0)
+    function getUsers($limit=-1, $offset=0, $ids_only=false)
     {
         global $wpdb;
-        $sql = 'SELECT ID from ' . $this->getTable() . ' ORDER BY email LIMIT ' . $offset . ','.$limit;
+        $sql = 'SELECT ID from ' . $this->getTable() . ' ORDER BY email' . ($limit>0?' LIMIT ' . $offset . ','.$limit:' ');
         $res = $wpdb->get_col($sql);
+
+        if ($ids_only)
+            return $res;
 
         $users = array();
         foreach($res as $r) {
