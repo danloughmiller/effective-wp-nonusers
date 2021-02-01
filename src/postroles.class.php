@@ -93,7 +93,17 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
     {
         global $wpdb;
 
-        $sql = 'SELECT meta_id as role_id, SUBSTR(meta_key, ' . (strlen($this->getMetaKey())+1) . ') as user_id, meta_value as role FROM ' . $this->getTable() . ' WHERE post_id=' . intval($postId) . ' AND meta_key LIKE \'' . $this->getMetaKey() . '%\'';
+        $sql = '
+            SELECT
+                meta_id as role_id, 
+                SUBSTR(meta_key, ' . (strlen($this->getMetaKey())+1) . ') as user_id, 
+                meta_value as role
+            FROM 
+                ' . $this->getTable() . ' 
+            WHERE 
+                post_id=' . intval($postId) . ' AND 
+                meta_key LIKE \'' . $this->getMetaKey() . '%\'
+            ';
         
         if (!empty($roles)) {
             if (is_string($roles))
