@@ -138,6 +138,9 @@ class Users extends \EffectiveWPToolkit\Singleton
 
     function checkLogin($email, $password)
     {
+        if (empty($email)||empty($password))
+            return false;
+
         $user = $this->getUserByEmail($email);
 
         if (empty($user))
