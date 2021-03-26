@@ -31,7 +31,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
           id int(11) NOT NULL AUTO_INCREMENT,
           email varchar(128) NOT NULL,
           password varchar(255) NOT NULL,
-          status VARCHAR(16) NOT NULL,
+          status VARCHAR(32) NOT NULL,
           registered datetime NOT NULL,
           confirmed datetime NOT NULL,
           PRIMARY KEY (id),

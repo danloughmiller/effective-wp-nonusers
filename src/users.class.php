@@ -96,15 +96,17 @@ class Users extends \EffectiveWPToolkit\Singleton
         return array('email', 'password');
     }
 
-    function createUser($data = array())
+    function createUser($data = array(), $ignoreValidation=false)
     {
         //Validate required fields
-        $required = $this->getRequiredFields();
-        foreach ($required as $field) {
-            if (empty($data[$field]))
-            {
-                throw new UserRequiredFieldMissing($field);
-                return;
+        if (!$ignoreValidation) {
+            $required = $this->getRequiredFields();
+            foreach ($required as $field) {
+                if (empty($data[$field]))
+                {
+                    throw new UserRequiredFieldMissing($field);
+                    return;
+                }
             }
         }
 
