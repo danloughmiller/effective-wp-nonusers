@@ -1,21 +1,50 @@
 <?php
 namespace EffectiveWPNonUsers;
 
+/**
+ * Represents a single user
+ * 
+ * @since 1.1 - First and last name now columns in main user table instead of meta
+ */
 class User extends \EffectiveDataModel\WPDataModel
 {
+    const FIELD_EMAIL = 'email';
+    const FIELD_PASSWORD = 'password';
+    const FIELD_STATUS = 'status';
+    const FIELD_REGISTERED = 'registered';
+    const FIELD_CONFIRMED = 'confirmed';
+    const FIELD_FIRST_NAME = 'firstName';
+    const FIELD_LAST_NAME = 'lastName';
 
     function __construct()
     {
         parent::__construct(EWN_Schema::NONUSER_TABLE);
     }
     
-    function getEmail() { return $this->getField('email');}
-    function getPassword() { return $this->getField('password'); }
-    function getStatus() { return $this->getField('status');}
-    function getRegistered() { return $this->getField('registered');}
-    function getConfirmed() { return $this->getField('confirmed');}
+    function getEmail() { return $this->getField(self::FIELD_EMAIL);}
+    function setEmail($email) { $this->setField(self::FIELD_EMAIL, $email); }
 
-    function setEmail($email) { $this->setField('email', $email); }
+    function getPassword() { return $this->getField(self::FIELD_PASSWORD); }
+    
+    
+    function getStatus() { return $this->getField('status');}
+    function setStatus($status) { $this->setField('status', $status); }
+    
+    function getRegistered() { return $this->getField('registered');}
+    function setRegistered($registered) { $this->setField('registered', $registered); }
+    
+    function getConfirmed() { return $this->getField('confirmed');}
+    function setConfirmed($confirmed) { 
+        $this->setField('confirmed', $confirmed===false?'0000-00-00 00:00:00':current_time('mysql'));
+    }
+
+    function getFirstName() { return $this->getField('firstName'); }
+    function setFirstName($name) { return $this->setField('firstName', $name); }
+
+    function getLastName() { return $this->getField('lastName'); }
+    function setLastName($name) { return $this->setField('lastName', $name); }
+
+    
     function setPassword($password, $applyHash=false) { 
         if ($applyHash) {
             $this->setField('password', Users::passwordHash($password));
@@ -26,12 +55,9 @@ class User extends \EffectiveDataModel\WPDataModel
     {
         $this->setPassword($passwordHash, false);
     }
-    function setStatus($status) { $this->setField('status', $status); }
-    function setRegistered($registered) { $this->setField('registered', $registered); }
-    function setConfirmed($confirmed) { 
-        $this->setField('confirmed', $confirmed===false?'0000-00-00 00:00:00':current_time('mysql'));
-    }
-
+    
+    
+    
     function isConfirmed()
     {
         return $this->getConfirmed() != '0000-00-00 00:00:00';

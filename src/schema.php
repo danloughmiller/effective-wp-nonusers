@@ -8,7 +8,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
     public const NONUSER_ROLES_TABLE='effwp_nonuser_roles';
     public const NONUSER_AUTH_TOKENS='effwp_nonuser_authtokens';
 
-    static $version = 1.0;
+    static $version = 1.1;
 
     static function createTables()
     {
@@ -26,20 +26,20 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
     {
         $tableName = $prefix . self::NONUSER_TABLE;
 
-        $sql = "
-          CREATE $tableName (
-          id int(11) NOT NULL AUTO_INCREMENT,
-          email varchar(128) NOT NULL,
+        $sql = "CREATE TABLE $tableName (
+          id INT(11) NOT NULL AUTO_INCREMENT,
+          email VARCHAR(128) NOT NULL,
           password varchar(255) NOT NULL,
+          firstName VARCHAR(64) NOT NULL,
+          lastName VARCHAR(64) NOT NULL,
           status VARCHAR(32) NOT NULL,
-          registered datetime NOT NULL,
-          confirmed datetime NOT NULL,
-          PRIMARY KEY (id),
+          registered DATETIME NOT NULL,
+          confirmed DATETIME NOT NULL,
+          PRIMARY KEY  (id),
           KEY email (email),
           KEY registered (registered),
           KEY status (status)
-          ) $charset;
-          ";
+          ) $charset;";
 
         return $sql;
     }
@@ -54,7 +54,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
         $tableName = $prefix . self::NONUSER_ROLES_TABLE;
 
         $sql = "
-          CREATE $tableName (
+          CREATE TABLE $tableName (
           id int(11) NOT NULL AUTO_INCREMENT,
           userId int(11) NOT NULL,
           role varchar(128) NOT NULL,
@@ -73,7 +73,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
         $tableName = $prefix . self::NONUSER_AUTH_TOKENS;
 
         $sql = "
-        CREATE $tableName (
+        CREATE TABLE $tableName (
         id int(11) NOT NULL AUTO_INCREMENT,
         userId int(11) NOT NULL,
         token varchar(255) NOT NULL,

@@ -132,6 +132,118 @@ class Users extends \EffectiveWPToolkit\Singleton
         return $user->getId();
     }
 
+
+    function searchUsers($term, $ids_only=false) {
+        global $wpdb;
+
+        $sql = '
+        SELECT 
+            users.ID,
+            users.email as email,
+            firstName as first_name,
+            lastName as lastName,
+            MATCH(email,firstName,lastName) AGAINST(\'%s\' IN BOOLEAN MODE) AS score
+        FROM 
+            ' . $this->getTable() . ' as users
+        HAVING
+            score>0
+        ORDER BY
+            score DESC,
+            lastName,
+            firstName,
+            email
+        LIMIT
+            100';
+
+        $sql = $wpdb->prepare($sql, $term);
+
+        /*
+        $terms = explode(' ', $term);
+        $regex = implode('|', $terms);
+
+        $sql = '
+        SELECT 
+            users.ID,
+            users.email as email,
+            meta.metaValue as first_name, 
+            meta2.metaValue as last_name,
+            (   (users.email REGEXP %s) +
+                (meta.metaValue REGEXP %s) +
+                (meta2.metaValue REGEXP %s)
+            ) as score
+        FROM 
+            ' . $this->getTable() . ' as users
+        LEFT JOIN 
+            ' . $wpdb->prefix . UserMeta::EWN_META_TABLE . ' as meta 
+                ON meta.objectId=users.id AND 
+                meta.metaKey=\'profile_first_name\' 
+        LEFT JOIN 
+            ' . $wpdb->prefix . UserMeta::EWN_META_TABLE . ' as meta2 
+                ON meta2.objectId=users.id AND 
+                meta2.metaKey=\'profile_last_name\' 
+        HAVING
+            score>0
+        ORDER BY
+            score DESC,
+            last_name,
+            first_name,
+            email
+        LIMIT
+            100';
+       
+
+        $sql = $wpdb->prepare($sql, $regex, $regex, $regex);
+        */
+        
+        $results = $wpdb->get_col($sql);
+
+        if (empty($results))
+            return $results;
+
+        if ($ids_only)
+            return $results;
+
+        $users = array();
+        foreach ($results as $result) {
+            $users[] = $this->getUser($result);
+        }
+
+        return $users;
+    }
+
+    function getUsersWithMetaValue($metaKey, $metaValue, $ids_only=false) {
+        global $wpdb;
+
+        $sql = '
+        SELECT 
+            users.ID
+        FROM 
+            ' . $this->getTable() . ' as users
+        INNER JOIN 
+            ' . $wpdb->prefix . UserMeta::EWN_META_TABLE . ' as meta 
+                ON meta.objectId=users.id AND 
+                meta.metaKey=%s AND
+                meta.metaValue=%s
+        LIMIT
+            100';
+        $sql = $wpdb->prepare($sql, $metaKey, $metaValue);
+        
+        $results = $wpdb->get_col($sql);
+
+        if (empty($results))
+            return $results;
+
+        if ($ids_only)
+            return $results;
+
+        $users = array();
+        foreach ($results as $result) {
+            $users[] = $this->getUser($result);
+        }
+
+        return $users;
+    }
+
     /* Security */
     function passwordHash($password)
     {
