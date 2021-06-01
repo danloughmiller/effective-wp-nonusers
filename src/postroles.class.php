@@ -100,6 +100,9 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
                 meta_value as role
             FROM 
                 ' . $this->getTable() . ' 
+            LEFT JOIN ' . $wpdb->prefix . 'effwp_nonusers AS users
+                ON
+                    users.id = SUBSTR(meta_key, 17)
             WHERE 
                 post_id=' . intval($postId) . ' AND 
                 meta_key LIKE \'' . $this->getMetaKey() . '%\'
@@ -112,6 +115,8 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
             $role_string = "'" . implode("', '", $roles) . "'";
             $sql .= ' AND meta_value IN (' . $role_string . ')';
         }
+
+        $sql .= ' ORDER BY users.lastName, users.firstName';
 
         $results = $wpdb->get_results($sql);
 

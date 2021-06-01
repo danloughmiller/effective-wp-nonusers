@@ -194,7 +194,7 @@ class Users extends \EffectiveWPToolkit\Singleton
 
         $sql = $wpdb->prepare($sql, $regex, $regex, $regex);
         */
-        
+        //echo $sql;
         $results = $wpdb->get_col($sql);
 
         if (empty($results))
@@ -211,6 +211,13 @@ class Users extends \EffectiveWPToolkit\Singleton
         return $users;
     }
 
+    /**
+     * Retrieves users with the specified meta valu
+     * 
+     * @param string $metaKey The meta key the value is expected to appear in
+     * @param string $metaValue The meta value the user needs to have for the specified key
+     * @param bool $ids_only If true will return an array of user ids, otherwise will return an array of user class instances
+     */
     function getUsersWithMetaValue($metaKey, $metaValue, $ids_only=false) {
         global $wpdb;
 
@@ -220,12 +227,11 @@ class Users extends \EffectiveWPToolkit\Singleton
         FROM 
             ' . $this->getTable() . ' as users
         INNER JOIN 
-            ' . $wpdb->prefix . UserMeta::EWN_META_TABLE . ' as meta 
+            ' .  $this->META()->getTable(true) . ' as meta 
                 ON meta.objectId=users.id AND 
                 meta.metaKey=%s AND
-                meta.metaValue=%s
-        LIMIT
-            100';
+                meta.metaValue=%s';
+
         $sql = $wpdb->prepare($sql, $metaKey, $metaValue);
         
         $results = $wpdb->get_col($sql);
