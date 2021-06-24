@@ -132,6 +132,25 @@ class Users extends \EffectiveWPToolkit\Singleton
         return $user->getId();
     }
 
+    /**
+     * Retrieves a list of user ids of users without a confirmation date
+     */
+    function getPendingUserIds()
+    {
+        global $wpdb;
+
+        $sql = '
+        SELECT 
+            ID
+        FROM 
+            ' . $this->getTable() . ' as users
+        WHERE
+            confirmed=\'0000-00-00 00:00:00\'
+        ';
+
+        return $wpdb->get_col($sql);
+    }
+
 
     function searchUsers($term, $ids_only=false) {
         global $wpdb;
