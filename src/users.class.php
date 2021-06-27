@@ -133,6 +133,25 @@ class Users extends \EffectiveWPToolkit\Singleton
     }
 
     /**
+     * Retrieves a list of all user ids
+     */
+    function getAllUserIds()
+    {
+        global $wpdb;
+
+        $sql = '
+        SELECT 
+            ID
+        FROM 
+            ' . $this->getTable() . ' as users
+        ORDER BY
+            ' . User::FIELD_LAST_NAME . ', ' . User::FIELD_FIRST_NAME . '
+        ';
+
+        return $wpdb->get_col($sql);
+    }
+
+    /**
      * Retrieves a list of user ids of users without a confirmation date
      */
     function getPendingUserIds()
@@ -146,6 +165,8 @@ class Users extends \EffectiveWPToolkit\Singleton
             ' . $this->getTable() . ' as users
         WHERE
             confirmed=\'0000-00-00 00:00:00\'
+        ORDER BY
+            ' . User::FIELD_LAST_NAME . ', ' . User::FIELD_FIRST_NAME . '
         ';
 
         return $wpdb->get_col($sql);
