@@ -182,7 +182,7 @@ class Users extends \EffectiveWPToolkit\Singleton
             users.email as email,
             firstName as first_name,
             lastName as lastName,
-            MATCH(email,firstName,lastName) AGAINST(\'%s\' IN BOOLEAN MODE) AS score
+            MATCH(email,firstName,lastName) AGAINST(\'%s\') AS score
         FROM 
             ' . $this->getTable() . ' as users
         HAVING
