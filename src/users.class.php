@@ -326,6 +326,17 @@ class Users extends \EffectiveWPToolkit\Singleton
             array('id'=>$userId)
         );
     }
+
+    function unconfirmAccount($userId)
+    {
+        global $wpdb;
+        
+        $wpdb->update(
+            $this->getTable(),
+            array('confirmed'=>'0000-00-00 00:00:00'),
+            array('id'=>$userId)
+        );
+    }
     /* End Security */
 
 }
