@@ -23,6 +23,11 @@ class Login extends \EffectiveWPToolkit\Singleton
         return $token;
     }
 
+    /**
+     * Returns the currently logging in user or false if the u
+     *
+     * @return User
+     */
     function getCurrentUser()
     {
         $token = !empty($_COOKIE[self::COOKIE_NAME_AUTH_TOKEN])?$_COOKIE[self::COOKIE_NAME_AUTH_TOKEN]:false;
