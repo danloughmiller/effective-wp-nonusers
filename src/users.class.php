@@ -173,7 +173,7 @@ class Users extends \EffectiveWPToolkit\Singleton
     }
 
 
-    function searchUsers($term, $ids_only=false) {
+    function searchUsers($term, $ids_only=false, $unconfirmed_only=false) {
         global $wpdb;
 
         $sql = '
@@ -185,6 +185,9 @@ class Users extends \EffectiveWPToolkit\Singleton
             MATCH(email,firstName,lastName) AGAINST(\'%s\') AS score
         FROM 
             ' . $this->getTable() . ' as users
+        WHERE
+            1=1
+            ' . ($unconfirmed_only?'AND confirmed=\'0000-00-00 00:00:00\'':'') . '
         HAVING
             score>0
         ORDER BY
