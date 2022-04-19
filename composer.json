@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "danloughmiller/effective-data-model": "master@dev",
-        "danloughmiller/effective-wp-toolkit": "master@dev"
+        "danloughmiller/effective-data-model": "dev-main",
+        "danloughmiller/effective-wp-toolkit": "dev-main"
     }
 }
