@@ -1,7 +1,9 @@
 {
     "name": "danloughmiller/effective-wp-nonusers",
     "autoload": {
-        "files": ["src/ewn.php"]
+        "psr-4": {
+            "EffectiveWPNonUsers\\": "src/"
+        }
     },
     "repositories": [
         {
