@@ -1,7 +1,9 @@
 <?php
 namespace EffectiveWPNonUsers;
 
-class Users extends \EffectiveWPToolkit\Singleton
+use EffectiveWPToolkit\Singleton;
+
+class Users extends Singleton
 {
     const USER_STATUS_NEW='new';
     const USER_STATUS_ACTIVE='active';

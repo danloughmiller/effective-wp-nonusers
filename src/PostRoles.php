@@ -9,12 +9,12 @@ class PostRoles extends \EffectiveWPToolkit\Singleton
     {
         return Users::instance();
     }
-
+/*
     protected function instantiatePostRoleObject()
     {
         return new PostRole();
     }
-
+*/
     function getTable()
     {
         global $wpdb;

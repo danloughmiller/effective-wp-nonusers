@@ -1,7 +1,9 @@
 <?php
 namespace EffectiveWPNonUsers;
 
-class Login extends \EffectiveWPToolkit\Singleton
+use EffectiveWPToolkit\Singleton;
+
+class Login extends Singleton
 {
     const TOKEN_LENGTH = 100;
     const COOKIE_NAME_AUTH_TOKEN = 'ewn_authtoken';
@@ -9,7 +11,7 @@ class Login extends \EffectiveWPToolkit\Singleton
     
     protected function USERS()
     {
-        return Users::get_instance();
+        return Users::getInstance();
     }
 
     function checkLogin($email, $password)
