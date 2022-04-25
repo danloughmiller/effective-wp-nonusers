@@ -39,14 +39,32 @@ class Users extends Singleton
         return $wpdb->get_var($sql);
     }
 
-    function getUsers($limit=-1, $offset=0, $ids_only=false)
+    /**
+     * Gets a list of unfiltered user ids by limit/offset
+     *
+     * @param integer $limit
+     * @param integer $offset
+     * @return int[]
+     */
+    function getUserIds($limit=-1, $offset=0)
     {
         global $wpdb;
         $sql = 'SELECT ID from ' . $this->getTable() . ' ORDER BY email' . ($limit>0?' LIMIT ' . $offset . ','.$limit:' ');
         $res = $wpdb->get_col($sql);
 
-        if ($ids_only)
-            return $res;
+        return $res;
+    }
+
+    /**
+     * Gets a list of User objects by limit, offset
+     *
+     * @param integer $limit
+     * @param integer $offset
+     * @return User[]
+     */
+    function getUsers($limit=-1, $offset=0)
+    {
+        $res = $this->getUserIds($limit, $offset);
 
         $users = array();
         foreach($res as $r) {
@@ -72,11 +90,23 @@ class Users extends Singleton
         return false;
     }
 
+    /**
+     * Returns a user given the ID
+     *
+     * @param int $id
+     * @return User
+     */
     function getUserById($id)
     {
         return $this->getUser($id);
     }
 
+    /**
+     * Returns a user given their email
+     *
+     * @param string $email
+     * @return User
+     */
     function getUserByEmail($email)
     {
         global $wpdb;
@@ -202,44 +232,6 @@ class Users extends Singleton
 
         $sql = $wpdb->prepare($sql, $term);
 
-        /*
-        $terms = explode(' ', $term);
-        $regex = implode('|', $terms);
-
-        $sql = '
-        SELECT 
-            users.ID,
-            users.email as email,
-            meta.metaValue as first_name, 
-            meta2.metaValue as last_name,
-            (   (users.email REGEXP %s) +
-                (meta.metaValue REGEXP %s) +
-                (meta2.metaValue REGEXP %s)
-            ) as score
-        FROM 
-            ' . $this->getTable() . ' as users
-        LEFT JOIN 
-            ' . $wpdb->prefix . UserMeta::EWN_META_TABLE . ' as meta 
-                ON meta.objectId=users.id AND 
-                meta.metaKey=\'profile_first_name\' 
-        LEFT JOIN 
-            ' . $wpdb->prefix . UserMeta::EWN_META_TABLE . ' as meta2 
-                ON meta2.objectId=users.id AND 
-                meta2.metaKey=\'profile_last_name\' 
-        HAVING
-            score>0
-        ORDER BY
-            score DESC,
-            last_name,
-            first_name,
-            email
-        LIMIT
-            100';
-       
-
-        $sql = $wpdb->prepare($sql, $regex, $regex, $regex);
-        */
-        //echo $sql;
         $results = $wpdb->get_col($sql);
 
         if (empty($results))
@@ -257,7 +249,7 @@ class Users extends Singleton
     }
 
     /**
-     * Retrieves users with the specified meta valu
+     * Retrieves users with the specified meta value
      * 
      * @param string $metaKey The meta key the value is expected to appear in
      * @param string $metaValue The meta value the user needs to have for the specified key
