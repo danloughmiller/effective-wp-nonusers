@@ -6,30 +6,27 @@ namespace EffectiveWPNonUsers;
  * addresses, and phone information
  * 
  * @since 1.1 First and Last name are now part of the core table and user class
+ * 
+ * @property string $profile_phone
+ * @property string $profile_postal_code
+ * @property string $profile_address
+ * @property string $profile_address2
+ * @property string $profile_city
+ * @property string $profile_state
+ * @property string $profile_country
+ * 
  */
 class NamedUser extends User
 {
-    //public const META_FIRST_NAME = 'profile_first_name'; //@since 1.1
-    //public const META_LAST_NAME = 'profile_last_name'; //@since 1.1
+    
     public const META_PHONE = 'profile_phone';
     public const META_POSTAL_CODE = 'profile_postal_code';
-
     public const META_ADDRESS = 'profile_address';
     public const META_ADDRESS2 = 'profile_address2';
     public const META_CITY = 'profile_city';
     public const META_STATE = 'profile_state';
     public const META_COUNTRY = 'profile_country';
-
-
-    /**
-     * @since 1.1 - Moved to User class
-    function getFirstName() { return $this->getMeta(self::META_FIRST_NAME, true); }
-    function setFirstName($name) { return $this->updateMeta(self::META_FIRST_NAME, $name); }
-
-    function getLastName() { return $this->getMeta(self::META_LAST_NAME, true); }
-    function setLastName($name) { return $this->updateMeta(self::META_LAST_NAME, $name); }
-    */
-
+   
     /**
      * Returns a formatted string containing the first and last name
      */
