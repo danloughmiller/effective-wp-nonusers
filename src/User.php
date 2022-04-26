@@ -5,6 +5,14 @@ namespace EffectiveWPNonUsers;
  * Represents a single user
  * 
  * @since 1.1 - First and last name now columns in main user table instead of meta
+ * 
+ * @property string $email
+ * @property string $password
+ * @property string $status
+ * @property string $registered
+ * @property string $confirmed
+ * @property string $firstName
+ * @property string $lastName
  */
 class User extends \EffectiveDataModel\WPDataModel
 {
@@ -19,6 +27,21 @@ class User extends \EffectiveDataModel\WPDataModel
     function __construct()
     {
         parent::__construct(EWN_Schema::NONUSER_TABLE);
+    }
+
+    function __set($name, $value)
+    {
+        switch ($name)
+        {
+            case self::FIELD_CONFIRMED:
+                $this->setConfirmed($value);
+                break;
+            case self::FIELD_PASSWORD:
+                $this->setPassword($value);
+                break;
+            default:
+                parent::__set($name, $value);
+        }
     }
     
     function getEmail() { return $this->getField(self::FIELD_EMAIL);}
@@ -49,8 +72,9 @@ class User extends \EffectiveDataModel\WPDataModel
         if ($applyHash) {
             $this->setField('password', Users::passwordHash($password));
         } else {
-            $this->setField('password', $password); }
+            $this->setField('password', $password);
         }
+    }
     function setPasswordHash($passwordHash)
     {
         $this->setPassword($passwordHash, false);
