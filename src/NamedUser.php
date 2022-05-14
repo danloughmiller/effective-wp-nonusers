@@ -5,7 +5,8 @@ namespace EffectiveWPNonUsers;
  * Adds additional fields to the basic user account for storing names,
  * addresses, and phone information
  * 
- * @since 1.1 First and Last name are now part of the core table and user class
+ * @since 1.1.0 First and Last name are now part of the core table and user class
+ * @since 2.0.0 Meta fields now use 
  * 
  * @property string $profile_phone
  * @property string $profile_postal_code
@@ -31,29 +32,20 @@ class NamedUser extends User
      * Returns a formatted string containing the first and last name
      */
     function getName() { 
-        return $this->getFirstName() . (!empty($this->getLastName())?' '.$this->getLastName():'');
-    } 
+        return $this->firstName . (!empty($this->lastName)?' '.$this->lastName:'');
+    }
 
-    function getPhone() { return $this->getMeta(self::META_PHONE, true); }
-    function setPhone($name) { return $this->updateMeta(self::META_PHONE, $name); }
-
-    function getAddress() { return $this->getMeta(self::META_ADDRESS, true); }
-    function setAddress($name) { return $this->updateMeta(self::META_ADDRESS, $name); }
-
-    function getAddress2() { return $this->getMeta(self::META_ADDRESS2, true); }
-    function setAddress2($name) { return $this->updateMeta(self::META_ADDRESS2, $name); }
-
-    function getCity() { return $this->getMeta(self::META_CITY, true); }
-    function setCity($name) { return $this->updateMeta(self::META_CITY, $name); }
-
-    function getState() { return $this->getMeta(self::META_STATE, true); }
-    function setState($name) { return $this->updateMeta(self::META_STATE, $name); }
-
-    function getCountry() { return $this->getMeta(self::META_COUNTRY, true); }
-    function setCountry($name) { return $this->updateMeta(self::META_COUNTRY, $name); }
-
-    function getPostalCode() { return $this->getMeta(self::META_POSTAL_CODE, true); }
-    function setPostalCode($postalCode) { return $this->updateMeta(self::META_POSTAL_CODE, $postalCode); }
-
+    protected function getMetaFields()
+    {
+        return parent::getMetaFields() + array(
+            self::META_PHONE,
+            self::META_POSTAL_CODE,
+            self::META_ADDRESS,
+            self::META_ADDRESS2,
+            self::META_CITY,
+            self::META_STATE,
+            self::META_COUNTRY
+        );
+    }
 }
 

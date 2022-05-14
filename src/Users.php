@@ -81,7 +81,7 @@ class Users extends Singleton
         $sql = $wpdb->prepare($sql, $id);
 
         $result = $wpdb->get_row($sql);
-
+        
         if (!empty($result)) {
             $user = $this->instantiateUserObject();
             return $user->fromArray($result);
@@ -161,7 +161,8 @@ class Users extends Singleton
         $user = new User();
         $user->fromArray($data);
         $user->save();
-        return $user->getId();
+
+        return $user->id;
     }
 
     /**
@@ -303,7 +304,7 @@ class Users extends Singleton
         if (empty($user))
             return false;
 
-        $hash = $user->getPassword();
+        $hash = $user->password;
         
         if (password_verify($password, $hash))
             return $user;

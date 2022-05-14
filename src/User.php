@@ -29,50 +29,47 @@ class User extends \EffectiveDataModel\WPDataModel
         parent::__construct(EWN_Schema::NONUSER_TABLE);
     }
 
-    function __set($name, $value)
+    /**
+     * Returns an array of fields which should be mapped to meta fields instead of table fields
+     *
+     * @return array
+     */
+    protected function getMetaFields() { return array(); }
+
+    function __get($field)
     {
-        switch ($name)
-        {
-            case self::FIELD_CONFIRMED:
-                $this->setConfirmed($value);
-                break;
-            case self::FIELD_PASSWORD:
-                $this->setPassword($value);
-                break;
-            default:
-                parent::__set($name, $value);
-        }
-    }
-    
-    function getEmail() { return $this->getField(self::FIELD_EMAIL);}
-    function setEmail($email) { $this->setField(self::FIELD_EMAIL, $email); }
+        if (in_array($field, $this->getMetaFields()))
+            return $this->getMeta($field);
 
-    function getPassword() { return $this->getField(self::FIELD_PASSWORD); }
-    
-    
-    function getStatus() { return $this->getField('status');}
-    function setStatus($status) { $this->setField('status', $status); }
-    
-    function getRegistered() { return $this->getField('registered');}
-    function setRegistered($registered) { $this->setField('registered', $registered); }
-    
-    function getConfirmed() { return $this->getField('confirmed');}
+        return parent::__get($field);
+    }
+
+    function __set($field, $value)
+    {
+        if (in_array($field, $this->getMetaFields()))
+            return $this->updateMeta($field, $value);
+
+        return parent::__set($field, $value);
+    }
+
+    function __isset($name)
+    {
+        if (in_array($name, $this->getMetaFields()))
+            return true;
+
+        return parent::__isset($name);
+    }
+
+
     function setConfirmed($confirmed) { 
-        $this->setField('confirmed', $confirmed===false?'0000-00-00 00:00:00':current_time('mysql'));
+        $this->setField('confirmed', $confirmed===false?'0000-00-00 00:00:00':current_time('mysql'), true);
     }
-
-    function getFirstName() { return $this->getField('firstName'); }
-    function setFirstName($name) { return $this->setField('firstName', $name); }
-
-    function getLastName() { return $this->getField('lastName'); }
-    function setLastName($name) { return $this->setField('lastName', $name); }
-
     
     function setPassword($password, $applyHash=false) { 
         if ($applyHash) {
-            $this->setField('password', Users::passwordHash($password));
+            $this->setField('password', Users::passwordHash($password), true);
         } else {
-            $this->setField('password', $password);
+            $this->setField('password', $password, true);
         }
     }
     function setPasswordHash($passwordHash)
@@ -80,13 +77,10 @@ class User extends \EffectiveDataModel\WPDataModel
         $this->setPassword($passwordHash, false);
     }
     
-    
-    
     function isConfirmed()
     {
-        return $this->getConfirmed() != '0000-00-00 00:00:00';
+        return $this->confirmed != '0000-00-00 00:00:00';
     }
-
 
     protected function USERS()
     {
@@ -108,19 +102,19 @@ class User extends \EffectiveDataModel\WPDataModel
     function getMeta($key, $singleValue=true)
     {
         $meta = $this->META();
-        return $meta->getMeta($this->getId(), $key, $singleValue);
+        return $meta->getMeta($this->id, $key, $singleValue);
     }
 
     function updateMeta($key, $value)
     {
         $meta = $this->META();
-        return $meta->updateMeta($this->getId(), $key, $value);
+        return $meta->updateMeta($this->id, $key, $value);
     }
 
     function getRoles()
     {
         $roles = $this->ROLES();
-        return $roles->getUserRoles($this->getId());
+        return $roles->getUserRoles($this->id);
     }
 
     function getRoleNames()
@@ -137,19 +131,19 @@ class User extends \EffectiveDataModel\WPDataModel
     function hasRole($role)
     {
         $roles = $this->ROLES();
-        return $roles->userHasRole($this->getId(), $role);
+        return $roles->userHasRole($this->id, $role);
     }
 
     function addRole($role, $roleData=array())
     {
         $roles = $this->ROLES();
-        return $roles->addUserRole($this->getId(), $role, $roleData);
+        return $roles->addUserRole($this->id, $role, $roleData);
     }
 
     function removeRole($role)
     {
         $roles = $this->ROLES();
-        return $roles->removeUserRole($this->getId(), $role);
+        return $roles->removeUserRole($this->id, $role);
     }
 
 }
