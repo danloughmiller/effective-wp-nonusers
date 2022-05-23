@@ -1,5 +1,9 @@
 <?php
 namespace EffectiveWPNonUsers;
+
+/**
+ * Defines the schema for the nonusers system
+ */
 class EWN_Schema extends \EffectiveWPToolkit\WPSchema
 {
 
@@ -18,7 +22,6 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
 
         parent::createTable($wpdb, self::getUsersSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUsersMetaSchema($prefix, self::$version, $charset_collate));
-        parent::createTable($wpdb, self::getUserRolesSchema($prefix, self::$version, $charset_collate));
         parent::createTable($wpdb, self::getUserAuthTokensSchema($prefix, self::$version, $charset_collate));
     }
 
@@ -35,6 +38,8 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
           status VARCHAR(32) NOT NULL,
           registered DATETIME NOT NULL,
           confirmed DATETIME NOT NULL,
+          confirmation_code VARCHAR(255) NOT NULL,
+          reset_password_code VARCHAR(255) NOT NULL
           PRIMARY KEY  (id),
           KEY email (email),
           KEY registered (registered),
@@ -47,25 +52,6 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
     static function getUsersMetaSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
     {
         return \EffectiveWPNonUsers\UserMeta::getInstance()->getSchema($prefix);
-    }
-
-    static function getUserRolesSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')
-    {
-        $tableName = $prefix . self::NONUSER_ROLES_TABLE;
-
-        $sql = "
-          CREATE TABLE $tableName (
-          id int(11) NOT NULL AUTO_INCREMENT,
-          userId int(11) NOT NULL,
-          role varchar(128) NOT NULL,
-          roleData text NOT NULL,
-          PRIMARY KEY (id),
-          KEY userId (userId),
-          KEY role (role)
-          )  $charset;
-          ";
-
-        return $sql;
     }
 
     static function getUserAuthTokensSchema($prefix, $version = 1, $charset = 'ENGINE=InnoDB DEFAULT CHARSET=utf8')

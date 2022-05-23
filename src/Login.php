@@ -7,28 +7,31 @@ class Login extends Singleton
 {
     const TOKEN_LENGTH = 100;
     const COOKIE_NAME_AUTH_TOKEN = 'ewn_authtoken';
-    const COOKIE_NAME_ELEVATE_TOKEN = 'ewn_elevatetoken';
-    
-    protected function USERS()
+
+
+    /**
+     * Returns the object to be used for user management
+     *
+     * @return UsersManager
+     */
+    function getUsersManagerObject()
     {
-        return Users::getInstance();
+        return UsersManager::instance();
     }
 
-    function checkLogin($email, $password)
-    {
-        return $this->USERS()->checkLogin($email, $password);
-    }
 
-    function createAuthToken($length=self::TOKEN_LENGTH)
+    function createToken($length=self::TOKEN_LENGTH)
     {
         $token = bin2hex(random_bytes($length));
         return $token;
     }
 
+    
+
     /**
-     * Returns the currently logging in user or false if the u
+     * Returns the currently logging in user or null if the user isn't logged in
      *
-     * @return User
+     * @return ?User
      */
     function getCurrentUser()
     {
@@ -41,91 +44,86 @@ class Login extends Singleton
             if (!empty($tokenInfo))
             {
                 $userId = $tokenInfo->userId;
-                return $this->getUserById($userId);
+                return ($this->getUsersManagerObject())->getUserById($userId);
             }
         }
 
-
-        return false;
+        return null;
     }
 
-    function getUserById($id)
+    /**
+     * Checks if a set of credentials is correct, returning the associated user if so, or null if not
+     *
+     * @param string $email
+     * @param string $password
+     * @return ?User
+     */
+    function checkLogin($email, $password)
     {
-        return $this->USERS()->getUser($id);
+        if (empty($email)||empty($password))
+            return false;
+
+        $user = ($this->getUsersManagerObject())->getUserByEmail($email);
+
+        if (empty($user))
+            return null;
+
+        $hash = $user->password;
+        
+        if (password_verify($password, $hash))
+            return $user;
+
+        return null;
     }
 
 
-    /* Cookie Management */
+    /**
+     * Attempts to login the user with the provided credentials
+     *
+     * @param string $email
+     * @param string $password
+     * @param boolean $clearOldTokens If set to true, existing auth tokens will be removed
+     * @return User
+     */
     function loginUser($email, $password, $clearOldTokens=true)
     {
         if ($user = $this->checkLogin($email,$password))
         {
             do {
-                $token = $this->createAuthToken();
+                $token = self::createToken();
             } while ($this->getTokenInfo($token)!=false);
 
             if ($clearOldTokens)
-                $this->removeUserTokens($user->getId());
+                $this->removeUserTokens($user->id);
 
-            $this->storeToken($user->getId(), $token);
+            $this->storeToken($user->getId, $token);
             setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
         }
     }
 
-    function forceLoginUser($email, $clearOldTokens=true)
-    {
-        if ($user = $this->USERS()->getUserByEmail($email))
-        {
-            do {
-                $token = $this->createAuthToken();
-            } while ($this->getTokenInfo($token)!=false);
-
-            if ($clearOldTokens)
-                $this->removeUserTokens($user->getId());
-
-            $this->storeToken($user->getId(), $token);
-            setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
-        }
-    }
-
-    function forceLoginUserById($id, $clearOldTokens=true)
-    {
-        if ($user = $this->USERS()->getUser($id))
-        {
-            do {
-                $token = $this->createAuthToken();
-            } while ($this->getTokenInfo($token)!=false);
-
-            if ($clearOldTokens)
-                $this->removeUserTokens($user->getId());
-
-            $this->storeToken($user->getId(), $token);
-            setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
-        }
-    }
-
-
+    /**
+     * Logs the current user out of their account by clearing the auth token cookie
+     * and removing the auth token
+     *
+     * @return void
+     */
     function logoutUser()
     {
+        if (!empty($_COOKIE[self::COOKIE_NAME_AUTH_TOKEN]))
+        {
+            $token = $_COOKIE[self::COOKIE_NAME_AUTH_TOKEN];
+            $this->clearToken($token);
+        }
+
         setcookie(self::COOKIE_NAME_AUTH_TOKEN, null, -1, '/');
-        setcookie(self::COOKIE_NAME_ELEVATE_TOKEN, null, -1, '/');
     }
 
-    /* End Cookie Management */
-
-    /* User Switching */
-    function switchToUser($userId)
-    {
-
-    }
-
-    function restoreUser()
-    {
-
-    }
-    /* End User Switching */
-
-    /* Token Management */
+    /**
+     * Removes all auth tokens associated with the given user id
+     *
+     * @param int $userId
+     * @return void
+     */
     function removeUserTokens($userId)
     {
         global $wpdb;
@@ -135,6 +133,27 @@ class Login extends Singleton
         $wpdb->query($sql);
     }
 
+    /**
+     * Removes a specific auth token from the table
+     *
+     * @param string $token
+     * @return void
+     */
+    function clearToken($token)
+    {
+        global $wpdb;
+        $sql = 'DELETE FROM ' . $wpdb->prefix . EWN_Schema::NONUSER_AUTH_TOKENS . ' WHERE token=%s LIMIT 1';
+        $sql = $wpdb->prepare($sql, $token);
+
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Retrieves the information about the given token
+     *
+     * @param string $token
+     * @return object
+     */
     function getTokenInfo($token)
     {
         global $wpdb;
@@ -146,6 +165,14 @@ class Login extends Singleton
         return $result;
     }
 
+    /**
+     * Stores a token in the database
+     *
+     * @param int $userId
+     * @param string $token
+     * @param boolean|string $created The date the token should be recorded as being created, if false the current time will be used
+     * @return int The row id containing the inserted token data
+     */
     function storeToken($userId, $token, $created=false)
     {
         if ($this->getTokenInfo($token))

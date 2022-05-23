@@ -4,6 +4,9 @@ namespace EffectiveWPNonUsers;
 /**
  * Represents a single user
  * 
+ * When implementing a custom user object it's helpful to override getUsersManagerObject and if needeed getUserMetaObject
+ * to return the correct manager object(s).
+ * 
  * @since 1.1 - First and last name now columns in main user table instead of meta
  * 
  * @property string $email
@@ -13,6 +16,8 @@ namespace EffectiveWPNonUsers;
  * @property string $confirmed
  * @property string $firstName
  * @property string $lastName
+ * @property string $confirmation_code
+ * @property string $reset_password_code
  */
 class User extends \EffectiveDataModel\WPDataModel
 {
@@ -23,10 +28,33 @@ class User extends \EffectiveDataModel\WPDataModel
     const FIELD_CONFIRMED = 'confirmed';
     const FIELD_FIRST_NAME = 'firstName';
     const FIELD_LAST_NAME = 'lastName';
+    const FIELD_CONFIRMATION_CODE = 'confirmation_coide';
+    const FIELD_RESET_PASSWORD_CODE = 'reset_password_code';
+    
 
     function __construct()
     {
         parent::__construct(EWN_Schema::NONUSER_TABLE);
+    }
+
+    /**
+     * Returns the object to be used for user management
+     *
+     * @return UsersManager
+     */
+    function getUsersManagerObject()
+    {
+        return UsersManager::instance();
+    }
+
+    /**
+     * Returns the object to be used for metadate retrieval and storage
+     *
+     * @return UserMeta
+     */
+    function getUserMetaObject()
+    {
+        return ($this->getUsersManagerObject())->getUserMetaObject();
     }
 
     /**
@@ -67,7 +95,7 @@ class User extends \EffectiveDataModel\WPDataModel
     
     function setPassword($password, $applyHash=false) { 
         if ($applyHash) {
-            $this->setField('password', Users::passwordHash($password), true);
+            $this->setField('password', ($this->getUsersManagerObject())->passwordHash($password), true);
         } else {
             $this->setField('password', $password, true);
         }
@@ -82,68 +110,17 @@ class User extends \EffectiveDataModel\WPDataModel
         return $this->confirmed != '0000-00-00 00:00:00';
     }
 
-    protected function USERS()
-    {
-        return Users::getInstance();
-    }
-
-    protected function META()
-    {
-        $users = $this->USERS();
-        return $users->META();
-    }
-
-    function ROLES()
-    {
-        $users = $this->USERS();
-        return $users->ROLES();
-    }
-
     function getMeta($key, $singleValue=true)
     {
-        $meta = $this->META();
+        $meta = UserMeta::instance();
         return $meta->getMeta($this->id, $key, $singleValue);
     }
 
     function updateMeta($key, $value)
     {
-        $meta = $this->META();
+        $meta = UserMeta::instance();
         return $meta->updateMeta($this->id, $key, $value);
     }
 
-    function getRoles()
-    {
-        $roles = $this->ROLES();
-        return $roles->getUserRoles($this->id);
-    }
-
-    function getRoleNames()
-    {
-        $role = $this->getRoles();
-        $s = array();
-        foreach ($role as $r) {
-            $s[] = $r->getRole();
-        }
-
-        return $s;
-    }
-
-    function hasRole($role)
-    {
-        $roles = $this->ROLES();
-        return $roles->userHasRole($this->id, $role);
-    }
-
-    function addRole($role, $roleData=array())
-    {
-        $roles = $this->ROLES();
-        return $roles->addUserRole($this->id, $role, $roleData);
-    }
-
-    function removeRole($role)
-    {
-        $roles = $this->ROLES();
-        return $roles->removeUserRole($this->id, $role);
-    }
 
 }
