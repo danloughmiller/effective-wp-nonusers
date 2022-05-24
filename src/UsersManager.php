@@ -136,7 +136,7 @@ class UsersManager extends Singleton
     {
         global $wpdb;
 
-        $sql = 'SELECT id FROM ' . $this->getPrefixedTable() . ' WHERE ' . $field . '=' . $value;
+        $sql = 'SELECT id FROM ' . $this->getPrefixedTable() . ' WHERE ' . $field . '= %s';
         $sql = $wpdb->prepare($sql, $value);
 
         $result = $wpdb->get_col($sql);
