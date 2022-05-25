@@ -129,15 +129,31 @@ class UsersManager extends Singleton
      * Returns an array of user ids where field provides matches the value provided
      *
      * @param string $field
-     * @param string $value
+     * @param mixed $value
+     * @param mixed $status a status value, array of values, or false for all statuses
      * @return integer[]
      */
-    function getUserIdsByField($field, $value)
+    function getUserIdsByField($field, $value, $status=false)
     {
         global $wpdb;
 
-        $sql = 'SELECT id FROM ' . $this->getPrefixedTable() . ' WHERE ' . $field . '= %s';
-        $sql = $wpdb->prepare($sql, $value);
+        if (!is_array($value))
+            $value = array($value);
+        
+        if (!is_array($status) && $status !== false)
+            $status = array($status);
+
+        if ($status !== false)
+            $status = implode(",", array_map(function($e){ return "'" . esc_sql($e) . "'";}, $status));
+
+        $value = implode(",", array_map(function($e){ return "'" . esc_sql($e) . "'";}, $value));
+
+        $sql = 'SELECT id FROM ' . $this->getPrefixedTable() . ' WHERE ' . $field . " IN ({$value})";
+
+        if ($status !== false)
+            $sql .= " AND status IN ({$status}) ";
+
+        $sql .= ' ORDER BY lastName, firstName';
 
         $result = $wpdb->get_col($sql);
 
@@ -149,11 +165,12 @@ class UsersManager extends Singleton
      *
      * @param string $field
      * @param string $value
+     * @param mixed $status a status value, array of values, or false for all statuses
      * @return User[]
      */
-    public function getUsersByField($field, $value)
+    public function getUsersByField($field, $value, $status=false)
     {
-        $user_ids = $this->getUserIdsByField($field, $value);
+        $user_ids = $this->getUserIdsByField($field, $value, $status);
         return $this->userIdsToUsers($user_ids);
     }
 
@@ -162,11 +179,12 @@ class UsersManager extends Singleton
      *
      * @param string $field
      * @param string $value
+     * @param mixed $status a status value, array of values, or false for all statuses
      * @return ?User
      */
-    function getUserByField($field, $value)
+    function getUserByField($field, $value, $status=false)
     {
-        $user_ids = $this->getUserIdsByField($field, $value);
+        $user_ids = $this->getUserIdsByField($field, $value, $status);
 
         if (!empty($user_ids[0]))
             return $this->getUserById($user_ids[0]);
@@ -195,6 +213,85 @@ class UsersManager extends Singleton
     function passwordHash($password)
     {
         return password_hash($password, PASSWORD_DEFAULT, array('cost'=>12));
+    }
+
+    /**
+     * Returns a list of user ids where the user have the supplied value in the specified meta field. Ordered by last name then first name
+     *
+     * @param string $meta_key
+     * @param mixed $value
+     * @param mixed $status a status value, array of values, or false for all statuses
+     * @return integer[]
+     */
+    function getUserIdsWithMetaValue($meta_key, $value, $status=false)
+    {
+        global $wpdb;
+
+        if (!is_array($value))
+            $value = array($value);
+        
+        if (!is_array($status) && $status !== false)
+            $status = array($status);
+
+        if ($status !== false)
+            $status = implode(",", array_map(function($e){ return "'" . esc_sql($e) . "'";}, $status));
+
+        $value = implode(",", array_map(function($e){ return "'" . esc_sql($e) . "'";}, $value));
+
+        $table = $this->getPrefixedTable();
+        $meta_table = ($this->getUserMetaObject())->getTable(true);
+
+        $sql = "
+            SELECT 
+                users.ID
+            FROM 
+                {$table} as users
+            INNER JOIN 
+                {$meta_table} as meta 
+                    ON ( meta.objectId=users.id AND 
+                    meta.metaKey=%s AND
+                    meta.metaValue IN ({$value}) )
+            WHERE
+                1=1 " .
+                ($status!==false? "AND `status` IN ({$status})" : '')
+            . " ORDER BY
+                lastName, firstName";
+
+        $sql = $wpdb->prepare($sql, $meta_key);
+        
+        $results = $wpdb->get_col($sql);
+        return $results;
+    }
+
+    /**
+     * Returns a list of Users where the user have the supplied value in the specified meta field. Ordered by last name then first name
+     *
+     * @param string $meta_key
+     * @param mixed $value
+     * @param mixed $status a status value, array of values, or false for all statuses
+     * @return User[]
+     */
+    function getUsersWithMetaValue($meta_key, $value, $status=false)
+    {
+        return $this->userIdsToUsers($this->getUserIdsWithMetaValue($meta_key,$value, $status));
+    }
+
+    /**
+     * Returns a User where the meta_key has the given value
+     *
+     * @param string $meta_key
+     * @param mixed $value
+     * @param mixed $status a status value, array of values, or false for all statuses
+     * @return User
+     */
+    function getUserWithMetaValue($meta_key, $value, $status=false)
+    {
+        $user_ids = $this->getUserIdsWithMetaValue($meta_key, $value, $status);
+
+        if (empty($user_ids))
+            return null;
+
+        return $this->getUserById($user_ids[0]);
     }
 
 
@@ -243,46 +340,7 @@ class UsersManager extends Singleton
     }
     */
 
-    /**
-     * Retrieves users with the specified meta value
-     * 
-     * @param string $metaKey The meta key the value is expected to appear in
-     * @param string $metaValue The meta value the user needs to have for the specified key
-     * @param bool $ids_only If true will return an array of user ids, otherwise will return an array of user class instances
-     */
-    /*
-    function getUsersWithMetaValue($metaKey, $metaValue, $ids_only=false) {
-        global $wpdb;
-
-        $sql = '
-        SELECT 
-            users.ID
-        FROM 
-            ' . $this->getPrefixedTable() . ' as users
-        INNER JOIN 
-            ' .  (UserMeta::instance())->field . ' as meta 
-                ON meta.objectId=users.id AND 
-                meta.metaKey=%s AND
-                meta.metaValue=%s';
-
-        $sql = $wpdb->prepare($sql, $metaKey, $metaValue);
-        
-        $results = $wpdb->get_col($sql);
-
-        if (empty($results))
-            return $results;
-
-        if ($ids_only)
-            return $results;
-
-        $users = array();
-        foreach ($results as $result) {
-            $users[] = $this->getUserById($result);
-        }
-
-        return $users;
-    }
-*/
+    
 
 
 }
