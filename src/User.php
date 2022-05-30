@@ -21,6 +21,8 @@ namespace EffectiveWPNonUsers;
  */
 class User extends \EffectiveDataModel\WPDataModel
 {
+    const TOKEN_LENGTH = 50;
+
     const FIELD_EMAIL = 'email';
     const FIELD_PASSWORD = 'password';
     const FIELD_STATUS = 'status';
@@ -123,4 +125,51 @@ class User extends \EffectiveDataModel\WPDataModel
     }
 
 
+    protected function createToken($length=self::TOKEN_LENGTH)
+    {
+        $token = bin2hex(random_bytes($length));
+        return $token;
+    }
+
+    /**
+     * Removes the password reset code, such as after a successful reset
+     *
+     * @return void
+     */
+    function clearPasswordReset()
+    {
+        $this->setField(self::FIELD_RESET_PASSWORD_CODE, '');
+    }
+
+    /**
+     * Create a reset password token and stores it in the user record
+     *
+     * @return string
+     */
+    function createPasswordResetCode()
+    {
+        do {
+            $code = $this->createToken();
+        } while (!empty($this->getUsersManagerObject()->getUserByResetCode($code)));
+        
+        $this->setField(self::FIELD_RESET_PASSWORD_CODE, $code);
+
+        return $code;
+    }
+
+    /**
+     * Create an account activation token and stores it in the user record
+     *
+     * @return string
+     */
+    function createAccountActivationCode()
+    {
+        do {
+            $code = $this->createToken();
+        } while (!empty($this->getUsersManagerObject()->getUserByConfirmationCode($code)));
+
+        $this->setField(self::FIELD_CONFIRMATION_CODE, $code);
+
+        return $code;
+    }
 }

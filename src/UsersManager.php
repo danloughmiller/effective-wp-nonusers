@@ -340,7 +340,27 @@ class UsersManager extends Singleton
     }
     */
 
-    
+    /**
+     * Attempts to locate a user by the confirmation code field
+     *
+     * @param string $confirmation_code
+     * @return ?User
+     */
+    function getUserByConfirmationCode(string $confirmation_code)
+    {
+        return $this->getUserByField(User::FIELD_CONFIRMATION_CODE, $confirmation_code);
+    }
+
+    /**
+     * Attempts to locate a user by the reset code field
+     *
+     * @param string $reset_code
+     * @return ?User
+     */
+    function getUserByResetCode(string $reset_code)
+    {
+        return $this->getUserByField(User::FIELD_RESET_PASSWORD_CODE, $reset_code);
+    }
 
 
 }
