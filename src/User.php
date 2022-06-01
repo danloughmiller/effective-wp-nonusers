@@ -92,7 +92,7 @@ class User extends \EffectiveDataModel\WPDataModel
 
 
     function setConfirmed($confirmed) { 
-        $this->setField('confirmed', $confirmed===false?'0000-00-00 00:00:00':current_time('mysql'), true);
+        $this->setField('confirmed', empty($confirmed)?null:current_time('mysql'), true);
     }
     
     function setPassword($password, $applyHash=false) { 
