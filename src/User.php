@@ -30,7 +30,7 @@ class User extends \EffectiveDataModel\WPDataModel
     const FIELD_CONFIRMED = 'confirmed';
     const FIELD_FIRST_NAME = 'firstName';
     const FIELD_LAST_NAME = 'lastName';
-    const FIELD_CONFIRMATION_CODE = 'confirmation_coide';
+    const FIELD_CONFIRMATION_CODE = 'confirmation_code';
     const FIELD_RESET_PASSWORD_CODE = 'reset_password_code';
     
 
@@ -109,7 +109,7 @@ class User extends \EffectiveDataModel\WPDataModel
     
     function isConfirmed()
     {
-        return $this->confirmed != '0000-00-00 00:00:00';
+        return !empty($this->confirmed);
     }
 
     function getMeta($key, $singleValue=true)

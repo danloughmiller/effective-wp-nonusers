@@ -185,7 +185,7 @@ class UsersManager extends Singleton
     function getUserByField($field, $value, $status=false)
     {
         $user_ids = $this->getUserIdsByField($field, $value, $status);
-
+        
         if (!empty($user_ids[0]))
             return $this->getUserById($user_ids[0]);
 
