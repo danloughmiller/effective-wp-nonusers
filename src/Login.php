@@ -89,16 +89,20 @@ class Login extends Singleton
     {
         if ($user = $this->checkLogin($email,$password))
         {
+            if ($clearOldTokens)
+                $this->removeUserTokens($user->id);
+
             do {
                 $token = self::createToken();
             } while ($this->getTokenInfo($token)!=false);
 
-            if ($clearOldTokens)
-                $this->removeUserTokens($user->id);
-
-            $this->storeToken($user->getId, $token);
+            $this->storeToken($user->id, $token);
             setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
+
+            return $user;
         }
+
+        return null;
     }
 
     /**
