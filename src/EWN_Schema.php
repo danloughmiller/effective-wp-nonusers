@@ -16,6 +16,8 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
 
     static function createTables()
     {
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
         $prefix = $wpdb->prefix;
