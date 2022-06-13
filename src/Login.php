@@ -80,10 +80,10 @@ class Login extends Singleton
     /**
      * Attempts to login the user with the provided credentials
      *
-     * @param string $email
-     * @param string $password
+     * @param string $email Email address for the user
+     * @param string $password Password for the user
      * @param boolean $clearOldTokens If set to true, existing auth tokens will be removed
-     * @return User
+     * @return ?User
      */
     function loginUser($email, $password, $clearOldTokens=true)
     {
