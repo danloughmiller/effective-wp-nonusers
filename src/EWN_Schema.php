@@ -41,7 +41,7 @@ class EWN_Schema extends \EffectiveWPToolkit\WPSchema
           registered DATETIME NOT NULL,
           confirmed DATETIME DEFAULT NULL,
           confirmation_code VARCHAR(255) NOT NULL,
-          reset_password_code VARCHAR(255) NOT NULL
+          reset_password_code VARCHAR(255) NOT NULL,
           PRIMARY KEY  (id),
           KEY email (email),
           KEY registered (registered),
