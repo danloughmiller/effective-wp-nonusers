@@ -32,7 +32,14 @@ class NamedUser extends User
      * Returns a formatted string containing the first and last name
      */
     function getName() { 
-        return $this->firstName . (!empty($this->lastName)?' '.$this->lastName:'');
+        $name = $this->firstName;
+        
+        if (!empty($name) && !empty($this->lastName))
+            $name .= ' ';
+
+        $name .= $this->lastName;
+
+        return $name;
     }
 
     protected function getMetaFields()
