@@ -152,6 +152,7 @@ class User extends \EffectiveDataModel\WPDataModel
             $code = $this->createToken();
         } while (!empty($this->getUsersManagerObject()->getUserByResetCode($code)));
         
+        $this->rowData[self::FIELD_RESET_PASSWORD_CODE] = true;
         $this->setField(self::FIELD_RESET_PASSWORD_CODE, $code);
 
         return $code;
@@ -168,6 +169,7 @@ class User extends \EffectiveDataModel\WPDataModel
             $code = $this->createToken();
         } while (!empty($this->getUsersManagerObject()->getUserByConfirmationCode($code)));
 
+        $this->rowData[self::FIELD_CONFIRMATION_CODE] = true;
         $this->setField(self::FIELD_CONFIRMATION_CODE, $code);
 
         return $code;
