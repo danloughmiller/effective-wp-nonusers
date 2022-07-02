@@ -92,17 +92,28 @@ class Login extends Singleton
             if ($clearOldTokens)
                 $this->removeUserTokens($user->id);
 
-            do {
-                $token = self::createToken();
-            } while ($this->getTokenInfo($token)!=false);
-
-            $this->storeToken($user->id, $token);
-            setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
+            $this->forceLogin($user);
 
             return $user;
         }
 
         return null;
+    }
+
+    /**
+     * Logs in the given user
+     *
+     * @param User $user
+     * @return void
+     */
+    function forceLogin(User $user)
+    {
+        do {
+            $token = self::createToken();
+        } while ($this->getTokenInfo($token)!=false);
+
+        $this->storeToken($user->id, $token);
+        setcookie(self::COOKIE_NAME_AUTH_TOKEN, $token, -1, '/');
     }
 
     /**
