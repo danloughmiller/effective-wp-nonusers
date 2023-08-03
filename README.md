@@ -1,4 +1,5 @@
 # effective-wp-nonusers
+A library for making a separate user system for Wordpress not relying on the native users table
 
 ## Change Log
 
